@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* .profile img div{
+    @apply block
+} */
+.profile img:hover div{
+  @apply block
+}

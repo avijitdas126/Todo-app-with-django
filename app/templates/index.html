@@ -1,0 +1,106 @@
+{% extends "modal.html" %}
+
+{% block bodypart %}
+{% if navigation %}
+<div class="flex flex-wrap justify-start gap-5 m-2">
+
+    
+    {% for item in navigation %}
+    <div class="border-2 border-black w-full md:w-[48%] rounded-2xl p-4 bg-white shadow-md">
+        <h2 class="mb-3 text-xl font-bold">{{ item.title }}</h2>
+        <div class="flex gap-3">
+            {% if item.priority == 1 %}
+            <span class="border-2 border-green-500 p-1 rounded-2xl text-green-500 font-semibold">Low Priority</span>
+            {% elif item.priority == 2 %}
+            <span class="border-2 border-yellow-700 p-1 rounded-2xl text-yellow-700 font-semibold">Medium Priority</span>
+            {% elif item.priority == 3 %}
+            <span class="border-2 border-red-900 p-1 rounded-2xl text-red-900 font-semibold">High Priority</span>
+            {% endif %}
+            
+        </div>
+        <div class="flex gap-3 mt-3">
+            <button class='bg-blue-600 cursor-pointer text-white p-2 rounded-xl' onclick="openModal('{{ item.todo_id }}','{{item.title}}',{{item.priority}})">Edit</button>
+            <form action="/delete/{{item.todo_id}}/" method="POST">
+                {% csrf_token %}
+                <input type="submit" class='bg-red-600 cursor-pointer text-white p-2 rounded-xl' value="Delete">
+            </form>
+            <form action="/mark_complete/{{item.todo_id}}/" method="POST">
+                {% csrf_token %}
+                <input type="submit" class='bg-green-600 cursor-pointer text-white p-2 rounded-xl' value="Mark as Complete">
+            </form>
+        </div>
+        <p class='mt-3'>{{item.date}} at {{item.time}}</p>
+    </div>
+    
+
+
+{% endfor %}
+<!-- Modal -->
+<div id="editModal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class=" ">
+                    <div class="mt-3 text-center  sm:text-left">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Edit Item</h3>
+                        <div class="mt-2">
+                            <form id="editForm" method="POST" action="">
+                                {% csrf_token %}
+                                    
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2" >Title:</label>
+                                    <input type="text" id="editTitle"  name="title" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2" for="editPriority">Priority:</label>
+                                    <select id="editPriority" name="priority" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={{item.priority}}>
+                                        <option value="1" name="priority" >Low Priority</option>
+                                        <option value="2" name="priority">Medium Priority</option>
+                                        <option value="3" name="priority">High Priority</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <button type="button" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" onclick="closeModal()">Cancel</button>
+                                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Save</button>
+                                    
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% else %}
+<p class="text-center text-2xl my-10">No todos available</p>
+{% endif %}
+<script>
+function openModal(todoId,title,priority) {
+    document.getElementById('editModal').classList.remove('hidden');
+    document.getElementById('editForm').action = `/edit/${todoId}/`;
+    document.getElementById('editTitle').value=title
+    let op=document.getElementById('editPriority')
+    let ops=op.getElementsByTagName("option")
+    if(priority==1){
+        ops[0].setAttribute("selected",true)
+    }
+    else if(priority==2){
+        ops[1].setAttribute("selected",true)
+    }
+    else{
+        ops[2].setAttribute("selected",true)
+    }
+}
+
+function closeModal() {
+    document.getElementById('editModal').classList.add('hidden');
+}
+</script>
+
+{% endblock bodypart %}

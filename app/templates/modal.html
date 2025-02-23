@@ -1,0 +1,192 @@
+{% extends "base.html" %} {% block body %}
+
+
+
+<div class="fixed z-10 overflow-y-auto inset-0 hidden" id="modal">
+  <div class="flex items-center justify-center min-h-screen px-4">
+    <!-- Background Overlay -->
+    <div class="fixed inset-0 bg-gray-900 opacity-75"></div>
+
+    <!-- Modal Content -->
+    <div
+      class="relative bg-white rounded-lg shadow-xl overflow-hidden transform transition-all sm:my-8 sm:max-w-lg w-full"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-headline"
+    >
+      <div class="bg-white px-6 pt-5 pb-4 sm:p-6">
+        <h3 class="mb-4 text-2xl font-semibold text-gray-800 text-center">
+          Add a New Todo
+        </h3>
+<form action="/add_todo/" method="POST">
+       {% csrf_token %}
+        <input
+        type="text"
+        class="w-full outline-none rounded bg-gray-100 p-2 mb-4 border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:border-blue-500"
+        placeholder="Id"
+        name='id'
+        style="display:none"
+        value={{id}}
+      />
+        <input
+          type="text"
+          class="w-full outline-none rounded bg-gray-100 p-2 mb-4 border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:border-blue-500"
+          placeholder="Enter a todo"
+          id="title"
+          name='title'
+          required=true
+        />
+
+        <label class="block font-medium text-gray-800 mb-1">Date:</label>
+        <input
+          type="date"
+          name="date"
+          id="date"
+          default:""
+          name='date'
+          class="w-full p-2 mb-4 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-500"
+        />
+
+        <label class="block font-medium text-gray-800 mb-1">Time:</label>
+        <input
+          type="time"
+          name="time"
+          name='time'
+          id="time"
+          class="w-full p-2 mb-4 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-500"
+        />
+
+        <label class="block font-medium text-gray-800 mb-1">Priority:</label>
+        <select
+          id="priority"
+          name="priority"
+          class="w-full p-2 mb-4 border border-gray-300 rounded bg-gray-100 focus:ring-2 focus:ring-blue-400 focus:border-blue-500"
+        >
+          <option value="1" name="priority">Low</option>
+          <option value="2" name="priority">Medium</option>
+          <option value="3" name="priority">High</option>
+        </select>
+      </div>
+
+      <div class="bg-gray-200 px-6 py-3 flex justify-end space-x-3">
+        <button
+          type="button"
+          class="py-2 px-4 bg-gray-500 text-white rounded hover:bg-gray-700 transition duration-200"
+          onclick="toggleModal()"
+        >
+          Cancel
+        </button>
+        <button
+        type='submit'
+          class="py-2 px-4 bg-orange-500 text-white rounded font-medium hover:bg-orange-700 transition duration-200"
+        >
+          Create
+        </button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+
+
+
+<div class='fixed bottom-4 right-4'>
+    <div class="w-[50px] h-[50px] bg-orange-500 p-3 rounded-full shadow-md cursor-pointer  " onclick="toggleModal()">
+        <svg
+          fill="#ffffff"
+         xml:space="preserve"
+            version="1.1"
+          id="Capa_1"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          viewBox="0 0 45.402 45.402"
+       >
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g
+            id="SVGRepo_tracerCarrier"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ></g>
+          <g id="SVGRepo_iconCarrier">
+            <g>
+              <path
+                d="M41.267,18.557H26.832V4.134C26.832,1.851,24.99,0,22.707,0c-2.283,0-4.124,1.851-4.124,4.135v14.432H4.141 c-2.283,0-4.139,1.851-4.138,4.135c-0.001,1.141,0.46,2.187,1.207,2.934c0.748,0.749,1.78,1.222,2.92,1.222h14.453V41.27 c0,1.142,0.453,2.176,1.201,2.922c0.748,0.748,1.777,1.211,2.919,1.211c2.282,0,4.129-1.851,4.129-4.133V26.857h14.435 c2.283,0,4.134-1.867,4.133-4.15C45.399,20.425,43.548,18.557,41.267,18.557z"
+              ></path>
+            </g>
+          </g>
+        </svg>
+      </div>
+</div>
+<script>
+   // Set default date to today
+   const dateInput = document.getElementById('date');
+   const today = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
+   dateInput.value = today;
+ 
+   // Set default time to the current time (rounded to nearest hour)
+   const timeInput = document.getElementById('time');
+   const now = new Date();
+   const hours = now.getHours().toString().padStart(2, '0');
+   const minutes = now.getMinutes().toString().padStart(2, '0');
+   timeInput.value = `${hours}:${minutes}`;
+    function toggleModal() {
+         document.getElementById('modal').classList.toggle('hidden')
+}
+
+
+
+</script>
+<script>
+  function generateRandomId(length = 10) {
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+      }
+      return result;
+    }
+    let addtodo=()=>{
+     // Prevent default form submission
+    
+        // Get form values
+        const title = document.getElementById("title").value;
+        const date = document.getElementById("date").value;
+        const time = document.getElementById("time").value;
+        const priority = document.getElementById("priority").value;
+        function getCookie(name) {
+          const nameEQ = name + "=";
+          const cookies = document.cookie.split(";");
+          for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i].trim();
+            if (cookie.indexOf(nameEQ) === 0) {
+              return decodeURIComponent(cookie.substring(nameEQ.length));
+            }
+          }
+          return null;
+        }
+        id=getCookie('id')
+        if(id){
+      if(!title){
+            alert('Must be enter a title field')
+      }
+        }
+        else{
+          window.location.replace('/login')
+        }
+        // Send the data to Django backend
+      
+          
+      };
+  
+    
+    
+</script>   
+
+{% block bodypart %}{% endblock bodypart %}
+{% endblock body %}
+
+
